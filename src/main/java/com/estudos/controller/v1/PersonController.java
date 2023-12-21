@@ -1,8 +1,7 @@
-package com.estudos.controller;
+package com.estudos.controller.v1;
 
-import com.estudos.data.PersonVO;
-import com.estudos.model.Person;
-import com.estudos.services.PersonServices;
+import com.estudos.data.v1.PersonVO;
+import com.estudos.services.v1.PersonServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/person/v1")
 public class PersonController {
     @Autowired
     private PersonServices services;
@@ -32,7 +31,6 @@ public class PersonController {
     public ResponseEntity<PersonVO> create(@RequestBody PersonVO person) {
         return ResponseEntity.status(HttpStatus.CREATED).body(services.create(person));
     }
-
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PersonVO> update(@RequestBody PersonVO person) {

@@ -1,6 +1,8 @@
-package com.estudos.services;
+package com.estudos.services.v1;
 
-import com.estudos.data.PersonVO;
+import com.estudos.data.v1.PersonVO;
+import com.estudos.data.mapper.DozerMapper;
+import com.estudos.data.model.Person;
 import com.estudos.repository.PersonRepository;
 import com.estudos.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,27 +20,27 @@ public class PersonServices {
 
     public List<PersonVO> findAll(){
         logger.info("Finding all person!");
-
-        return repository.findAll();
+        return DozerMapper.parseListsObjects(repository.findAll(), PersonVO.class);
     }
 
     public PersonVO findById(Long id){
         logger.info("Finding one person!");
-
-        return repository.findById(id)
+        Person person = repository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Person id: " + id + " not found."));
+
+        return DozerMapper.parseObject(person, PersonVO.class);
     }
 
     public PersonVO create(PersonVO person){
         logger.info("Creating one person!");
 
-        return repository.save(person);
+        var entity = DozerMapper.parseObject(person, Person.class);
+        return DozerMapper.parseObject(repository.save(entity), PersonVO.class);
     }
 
     public PersonVO update(PersonVO person){
         logger.info("Updating one person!");
-
-        PersonVO entity = repository.findById(person.getId())
+        Person entity = repository.findById(person.getId())
                 .orElseThrow(() -> new ObjectNotFoundException("Person id: " + person.getId() + " not found."));
 
         entity.setFirstName(person.getFirstName());
@@ -46,12 +48,12 @@ public class PersonServices {
         entity.setAddress(person.getAddress());
         entity.setGender(person.getGender());
 
-        return repository.save(person);
+        return DozerMapper.parseObject(repository.save(entity), PersonVO.class);
     }
 
     public void delete(Long id){
         logger.info("Deleting one person!");
-        PersonVO entity = repository.findById(id)
+        Person entity = repository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Person id: " + id + " not found."));
 
         repository.delete(entity);

@@ -1,9 +1,8 @@
-package com.estudos.model;
+package com.estudos.data.model;
 
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 @Entity
 @Table(name = "person")
@@ -69,13 +68,21 @@ public class Person implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Person person)) return false;
-        return Objects.equals(getId(), person.getId()) && Objects.equals(getFirstName(), person.getFirstName())
-                && Objects.equals(getLastName(), person.getLastName()) && Objects.equals(getAddress(), person.getAddress())
-                && Objects.equals(getGender(), person.getGender());
+
+        if (!getId().equals(person.getId())) return false;
+        if (!getFirstName().equals(person.getFirstName())) return false;
+        if (!getLastName().equals(person.getLastName())) return false;
+        if (!getAddress().equals(person.getAddress())) return false;
+        return getGender().equals(person.getGender());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getFirstName(), getLastName(), getAddress(), getGender());
+        int result = getId().hashCode();
+        result = 31 * result + getFirstName().hashCode();
+        result = 31 * result + getLastName().hashCode();
+        result = 31 * result + getAddress().hashCode();
+        result = 31 * result + getGender().hashCode();
+        return result;
     }
 }
