@@ -1,15 +1,23 @@
 package com.estudos.data.v1;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+@JsonPropertyOrder({"id", "address", "first_name", "last_name", "gender"}) // Ordem que ficará no JSON
 public class PersonVO implements Serializable {
 
 
     private Long id;
+    @JsonProperty("first_name") // Como ficará o nome no json.
     private String firstName;
+    @JsonProperty("last_name") // Como ficará o nome no json.
     private String lastName;
     private String address;
+    // @JsonIgnore // Omitindo esse atributo no json.
     private String gender;
 
     public PersonVO() {
