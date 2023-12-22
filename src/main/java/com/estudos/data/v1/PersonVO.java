@@ -3,15 +3,18 @@ package com.estudos.data.v1;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.github.dozermapper.core.Mapping;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-@JsonPropertyOrder({"id", "address", "first_name", "last_name", "gender"}) // Ordem que ficará no JSON
-public class PersonVO implements Serializable {
+@JsonPropertyOrder({"key", "address", "first_name", "last_name", "gender"}) // Ordem que ficará no JSON
+public class PersonVO extends RepresentationModel<PersonVO> implements Serializable {
 
-
-    private Long id;
+    @Mapping("id")
+    @JsonProperty("id")
+    private Long key;
     @JsonProperty("first_name") // Como ficará o nome no json.
     private String firstName;
     @JsonProperty("last_name") // Como ficará o nome no json.
@@ -23,12 +26,12 @@ public class PersonVO implements Serializable {
     public PersonVO() {
     }
 
-    public Long getId() {
-        return id;
+    public Long getKey() {
+        return key;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setKey(Long key) {
+        this.key = key;
     }
 
     public String getFirstName() {
@@ -63,17 +66,4 @@ public class PersonVO implements Serializable {
         this.gender = gender;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PersonVO person)) return false;
-        return Objects.equals(getId(), person.getId()) && Objects.equals(getFirstName(), person.getFirstName())
-                && Objects.equals(getLastName(), person.getLastName()) && Objects.equals(getAddress(), person.getAddress())
-                && Objects.equals(getGender(), person.getGender());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getFirstName(), getLastName(), getAddress(), getGender());
-    }
 }
