@@ -5,6 +5,7 @@ import com.estudos.data.mapper.DozerMapper;
 import com.estudos.data.model.Person;
 import com.estudos.data.v1.PersonVO;
 import com.estudos.repository.PersonRepository;
+import com.estudos.services.exceptions.BadRequestException;
 import com.estudos.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class PersonServices {
 
     public PersonVO create(PersonVO person) {
         logger.info("Creating one person!");
+        if (person == null) throw new BadRequestException("O person não pode ser nulo");
 
         var entity = DozerMapper.parseObject(person, Person.class);
         var vo = DozerMapper.parseObject(repository.save(entity), PersonVO.class);
@@ -54,6 +56,8 @@ public class PersonServices {
 
     public PersonVO update(PersonVO person) {
         logger.info("Updating one person!");
+        if (person == null) throw new BadRequestException("O person não pode ser nulo");
+
         Person entity = repository.findById(person.getKey())
                 .orElseThrow(() -> new ObjectNotFoundException("Person id: " + person.getKey() + " not found."));
 
