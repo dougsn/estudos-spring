@@ -45,7 +45,7 @@ public class PersonServices {
 
     public PersonVO create(PersonVO person) {
         logger.info("Creating one person!");
-        if (person == null) throw new BadRequestException("O person não pode ser nulo");
+        if (person == null) throw new BadRequestException("The person cannot be null.");
 
         var entity = DozerMapper.parseObject(person, Person.class);
         var vo = DozerMapper.parseObject(repository.save(entity), PersonVO.class);
@@ -56,7 +56,7 @@ public class PersonServices {
 
     public PersonVO update(PersonVO person) {
         logger.info("Updating one person!");
-        if (person == null) throw new BadRequestException("O person não pode ser nulo");
+        if (person == null) throw new BadRequestException("The person cannot be null.");
 
         Person entity = repository.findById(person.getKey())
                 .orElseThrow(() -> new ObjectNotFoundException("Person id: " + person.getKey() + " not found."));
