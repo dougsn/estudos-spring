@@ -56,7 +56,7 @@ public class BookServices {
         Book newBook = repository.save(new Book(null, book.getAuthor(), book.getLaunchDate(), book.getPrice(),
                 book.getTitle()));
 
-        return mapper.apply(repository.save(newBook))
+        return mapper.apply(newBook)
                 .add(linkTo(methodOn(BookController.class).findById(newBook.getId())).withSelfRel());
     }
 
