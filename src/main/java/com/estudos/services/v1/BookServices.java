@@ -3,6 +3,7 @@ package com.estudos.services.v1;
 import com.estudos.controller.v1.BookController;
 import com.estudos.data.dto.BookDTO;
 import com.estudos.data.dto.BookDTOMapper;
+import com.estudos.data.dto.BookDTOMapperList;
 import com.estudos.data.mapper.DozerMapper;
 import com.estudos.data.model.Book;
 import com.estudos.data.v1.BookVO;
@@ -27,16 +28,17 @@ public class BookServices {
     BookRepository repository;
     @Autowired
     BookDTOMapper mapper;
+    @Autowired
+    BookDTOMapperList listMapper;
 
     public List<BookDTO> findAll() {
         logger.info("Finding all books!");
-        var books = repository.findAll()
-                .stream()
-                .map(mapper)
-                .collect(Collectors.toList());
-        books.forEach(b -> b.add(linkTo(methodOn(BookController.class).findById(b.getId())).withSelfRel()));
+        var books = repository.findAll();
 
-        return books;
+        var dtoList = listMapper.apply(books);
+        dtoList.forEach(b -> b.add(linkTo(methodOn(BookController.class).findById(b.getId())).withSelfRel()));
+
+        return dtoList;
     }
 
     public BookDTO findById(Long id) {

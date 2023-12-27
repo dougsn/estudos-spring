@@ -30,7 +30,7 @@ public class MockBook {
 
     public List<BookDTO> mockDTOList() {
         List<BookDTO> books = new ArrayList<>();
-        for (int i = 0; i < 14; i++) {
+        for (int i = 0; i < 10; i++) {
             books.add(mockDTO(i));
         }
         return books;
@@ -38,19 +38,20 @@ public class MockBook {
     
     public Book mockEntity(Integer number) {
         Book book = new Book();
-        book.setId(Long.valueOf(number));
+        book.setId(number.longValue());
         book.setAuthor("Author Test " + number);
         book.setTitle("Title Test " + number);
-        book.setPrice(1.0);
+        book.setPrice(number.doubleValue());
         book.setLaunch_date(LocalDate.now());
         return book;
     }
 
     public BookDTO mockDTO(Integer number) {
         BookDTO book = new BookDTO();
+        book.setId(number.longValue());
         book.setAuthor("Author Test " + number);
         book.setTitle("Title Test " + number);
-        book.setPrice(1.0);
+        book.setPrice(number.doubleValue());
         book.setLaunchDate(LocalDate.now());
         return book;
     }
