@@ -1,43 +1,38 @@
 package com.estudos.data.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "users")
-public class User implements UserDetails, Serializable {
-
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "user_name", unique = true)
     private String userName;
-    @Column(name = "full_name")
-    private String fullName;
     @Column(name = "password")
     private String password;
-    @Column(name = "account_non_expired")
-    private Boolean account_non_expired;
-    @Column(name = "account_non_locked")
-    private Boolean account_non_locked;
-    @Column(name = "credentials_non_expired")
-    private Boolean credentials_non_expired;
-    @Column(name = "enabled")
-    private Boolean enabled;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_permission", joinColumns = {@JoinColumn(name = "id_user")},
             inverseJoinColumns = {@JoinColumn(name = "id_permission")}
     )
     private List<Permission> permissions;
 
-    public User() {}
 
     public List<String> getRoles() {
         List<String> roles = new ArrayList<>();
@@ -54,31 +49,47 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return this.userName;
+        return userName;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.account_non_expired;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.account_non_locked;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.credentials_non_expired;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.isEnabled();
+        return true;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
     }
 }

@@ -1,12 +1,16 @@
 package com.estudos.data.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 
 @Entity
 @Table(name = "permission")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Permission implements GrantedAuthority, Serializable {
 
     @Id

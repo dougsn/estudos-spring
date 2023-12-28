@@ -1,8 +1,8 @@
 package com.estudos.unittests.services;
 
-import com.estudos.data.dto.BookDTO;
-import com.estudos.data.dto.BookDTOMapper;
-import com.estudos.data.dto.BookDTOMapperList;
+import com.estudos.data.dto.book.BookDTO;
+import com.estudos.data.dto.book.BookDTOMapper;
+import com.estudos.data.dto.book.BookDTOMapperList;
 import com.estudos.data.model.Book;
 import com.estudos.repository.BookRepository;
 import com.estudos.services.exceptions.BadRequestException;

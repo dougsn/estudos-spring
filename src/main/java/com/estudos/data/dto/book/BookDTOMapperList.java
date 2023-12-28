@@ -1,4 +1,4 @@
-package com.estudos.data.dto;
+package com.estudos.data.dto.book;
 
 import com.estudos.data.model.Book;
 import org.springframework.stereotype.Service;

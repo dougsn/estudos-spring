@@ -1,6 +1,8 @@
 package com.estudos.controller.exceptions;
 
 import com.estudos.services.exceptions.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -8,11 +10,14 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,42 +68,49 @@ public class ResourceExceptionHandler {
     }
 
     // System access exceptions (Security)
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public ResponseEntity<StandardError> accessDeniedException(HttpServletRequest request) {
-//        StandardError error =
-//                new StandardError(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), "Acesso negado.", request.getRequestURI());
-//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
-//    }
-//
-//    @ExceptionHandler(MalformedJwtException.class)
-//    public ResponseEntity<StandardError> malformedJwtException(HttpServletRequest request) {
-//        StandardError error =
-//                new StandardError(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), "JWT malformado.", request.getRequestURI());
-//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
-//    }
-//
-//    @ExceptionHandler(ExpiredJwtException.class)
-//    public ResponseEntity<StandardError> expiredJwtException(HttpServletRequest request) {
-//        StandardError error =
-//                new StandardError(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), "JWT expirado.", request.getRequestURI());
-//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
-//    }
-//
-//    @ExceptionHandler(SignatureException.class)
-//    public ResponseEntity<StandardError> signatureException(HttpServletRequest request) {
-//        StandardError error =
-//                new StandardError(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(), "Assinatura do JWT inválida.", request.getRequestURI());
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-//    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<StandardError> accessDeniedException(HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), "Acesso negado.", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
 
-    // Exceptions handled and used in the service layer.
+    @ExceptionHandler(InvalidJwtAuthenticationException.class)
+    public ResponseEntity<StandardError> InvalidJwtAuthenticationException(HttpServletRequest request, HttpClientErrorException ex) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
 
-//    @ExceptionHandler(BadCredentialsException.class)
-//    public ResponseEntity<StandardError> badCredentialsException(HttpServletRequest request) {
-//        StandardError error =
-//                new StandardError(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(), "Credenciais incorretas.", request.getRequestURI());
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-//    }
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<StandardError> malformedJwtException(HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), "JWT malformado.", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<StandardError> expiredJwtException(HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), "JWT expirado.", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<StandardError> signatureException(HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(), "Assinatura do JWT inválida.", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    //Exceptions handled and used in the service layer.
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<StandardError> badCredentialsException(HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(), "Credenciais incorretas.", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
 
     @ExceptionHandler(ObjectNotFoundException.class)
     public ResponseEntity<StandardError> objectNotFoundException(ObjectNotFoundException ex, HttpServletRequest request) {

@@ -1,6 +1,6 @@
 package com.estudos.controller.v1;
 
-import com.estudos.data.dto.BookDTO;
+import com.estudos.data.dto.book.BookDTO;
 import com.estudos.services.v1.BookServices;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

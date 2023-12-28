@@ -1,9 +1,7 @@
 package com.estudos.unittests.mocks;
 
-import com.estudos.data.dto.BookDTO;
+import com.estudos.data.dto.book.BookDTO;
 import com.estudos.data.model.Book;
-import com.estudos.data.model.Person;
-import com.estudos.data.v1.PersonVO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

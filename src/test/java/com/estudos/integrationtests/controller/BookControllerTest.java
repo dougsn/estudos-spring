@@ -1,6 +1,5 @@
 package com.estudos.integrationtests.controller;
 
-import com.estudos.data.dto.BookDTOMapper;
 import com.estudos.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.estudos.integrationtests.vo.BookDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,9 +13,6 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
