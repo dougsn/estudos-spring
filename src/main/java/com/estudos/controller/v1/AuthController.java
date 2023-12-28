@@ -35,7 +35,7 @@ public class AuthController {
     @ApiResponse(responseCode = "201", description = "Created", content = {
             @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterRequest.class))
     })
-    @PostMapping("/signin")
+    @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request) {
         log.info("Adicionando um novo usuário");
 

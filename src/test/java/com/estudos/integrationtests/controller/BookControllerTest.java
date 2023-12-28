@@ -1,6 +1,8 @@
 package com.estudos.integrationtests.controller;
 
 import com.estudos.integrationtests.testcontainers.AbstractIntegrationTest;
+import com.estudos.integrationtests.vo.AuthenticationRequest;
+import com.estudos.integrationtests.vo.AuthenticationResponse;
 import com.estudos.integrationtests.vo.BookDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -24,6 +26,7 @@ public class BookControllerTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static ObjectMapper objectMapper;
     private static BookDTO book;
+    private static AuthenticationResponse authenticationResponse;
 
     @BeforeAll
     public static void setup() {
@@ -31,6 +34,37 @@ public class BookControllerTest extends AbstractIntegrationTest {
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         book = new BookDTO();
+        authenticationResponse = new AuthenticationResponse();
+    }
+
+
+    @Test
+    @Order(0)
+    public void authorization() throws JsonProcessingException {
+        AuthenticationRequest user = new AuthenticationRequest("Administrator", "admin123");
+
+        var token = given()
+                .basePath("/api/auth/v1/login")
+                .port(TestConfigs.SERVER_PORT)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .body(user)
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        authenticationResponse = objectMapper.readValue(token, AuthenticationResponse.class);
+        specification = new RequestSpecBuilder()
+                .addHeader(TestConfigs.HEADER_PARM_AUTHORIZATION, "Bearer " + authenticationResponse.getToken())
+                .setBasePath("/api/book/v1")
+                .setPort(TestConfigs.SERVER_PORT)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
     }
 
     @Test
@@ -38,18 +72,9 @@ public class BookControllerTest extends AbstractIntegrationTest {
     public void testCreate() throws JsonProcessingException {
         mockBook();
 
-        // Criando a especificação para fazer a requisição http com o header, path, porta ..
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
-                .setBasePath("api/book/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
                 .body(book)
                 .when()
                 .post()
@@ -82,18 +107,9 @@ public class BookControllerTest extends AbstractIntegrationTest {
     public void testCreateWithWrongOrigin() {
         mockBook();
 
-        // Criando a especificação para fazer a requisição http com o header, path, porta ..
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
-                .setBasePath("api/book/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
                 .body(book)
                 .when()
                 .post()
@@ -112,18 +128,9 @@ public class BookControllerTest extends AbstractIntegrationTest {
     public void findById() throws JsonProcessingException {
         mockBook();
 
-        // Criando a especificação para fazer a requisição http com o header, path, porta ..
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
-                .setBasePath("api/book/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
                 .pathParams("id", book.getId())
                 .when()
                 .get("{id}")
@@ -156,18 +163,9 @@ public class BookControllerTest extends AbstractIntegrationTest {
     public void findByIdWithWrongOrigin() {
         mockBook();
 
-        // Criando a especificação para fazer a requisição http com o header, path, porta ..
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
-                .setBasePath("api/book/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
                 .pathParams("id", book.getId())
                 .when()
                 .get("{id}")

@@ -2,6 +2,7 @@ package com.estudos.integrationtests.controller;
 
 import com.estudos.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.estudos.integrationtests.vo.AuthenticationRequest;
+import com.estudos.integrationtests.vo.AuthenticationResponse;
 import com.estudos.integrationtests.vo.PersonVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -25,6 +26,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static ObjectMapper objectMapper;
     private static PersonVO person;
+    private static AuthenticationResponse authenticationResponse;
 
     @BeforeAll
     public static void setup() {
@@ -32,11 +34,12 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); // Desabilita falhas com props desconhecidos (hateoas)
 
         person = new PersonVO();
+        authenticationResponse = new AuthenticationResponse();
     }
 
     @Test
     @Order(0)
-    public void authorization() {
+    public void authorization() throws JsonProcessingException {
         AuthenticationRequest user = new AuthenticationRequest("Administrator", "admin123");
 
         var token = given()
@@ -49,11 +52,12 @@ public class PersonControllerTest extends AbstractIntegrationTest {
                 .then()
                 .statusCode(200)
                 .extract()
-                .jsonPath()
-                .getString("token");
+                .body()
+                .asString();
 
+        authenticationResponse = objectMapper.readValue(token, AuthenticationResponse.class);
         specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARM_AUTHORIZATION, "Bearer " + token)
+                .addHeader(TestConfigs.HEADER_PARM_AUTHORIZATION, "Bearer " + authenticationResponse.getToken())
                 .setBasePath("api/person/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
