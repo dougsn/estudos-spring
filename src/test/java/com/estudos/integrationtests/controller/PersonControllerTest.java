@@ -1,6 +1,8 @@
 package com.estudos.integrationtests.controller;
 
 import com.estudos.integrationtests.testcontainers.AbstractIntegrationTest;
+import com.estudos.integrationtests.vo.AuthenticationRequest;
+import com.estudos.integrationtests.vo.AuthenticationResponse;
 import com.estudos.integrationtests.vo.PersonVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -34,22 +36,41 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(1)
-    public void testCreate() throws JsonProcessingException {
-        mockPerson();
+    @Order(0)
+    public void authorization() throws JsonProcessingException {
+        AuthenticationRequest user = new AuthenticationRequest("Administrator", "admin123");
 
-        // Criando a especificação para fazer a requisição http com o header, path, porta ..
+        var token = given()
+                .basePath("/api/auth/v1/login")
+                .port(TestConfigs.SERVER_PORT)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .body(user)
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
         specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
+                .addHeader(TestConfigs.HEADER_PARM_AUTHORIZATION, "Bearer " + token)
                 .setBasePath("api/person/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
 
+    }
+
+    @Test
+    @Order(1)
+    public void testCreate() throws JsonProcessingException {
+        mockPerson();
 
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
                 .body(person)
                 .when()
                 .post()
@@ -86,18 +107,9 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     public void testCreateWithWrongOrigin() {
         mockPerson();
 
-        // Criando a especificação para fazer a requisição http com o header, path, porta ..
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
-                .setBasePath("api/person/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
                 .body(person)
                 .when()
                 .post()
@@ -116,18 +128,9 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     public void findById() throws JsonProcessingException {
         mockPerson();
 
-        // Criando a especificação para fazer a requisição http com o header, path, porta ..
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
-                .setBasePath("api/person/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
                 .pathParams("id", person.getId())
                 .when()
                 .get("{id}")
@@ -164,18 +167,9 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     public void findByIdWithWrongOrigin() {
         mockPerson();
 
-        // Criando a especificação para fazer a requisição http com o header, path, porta ..
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
-                .setBasePath("api/person/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
                 .pathParams("id", person.getId())
                 .when()
                 .get("{id}")
