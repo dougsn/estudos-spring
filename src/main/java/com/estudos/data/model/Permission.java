@@ -19,8 +19,6 @@ public class Permission implements GrantedAuthority, Serializable {
     @Column
     private String description;
 
-    public Permission(Long id) {
-    }
 
     public Long getId() {
         return id;
