@@ -2,7 +2,6 @@ package com.estudos.integrationtests.controller;
 
 import com.estudos.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.estudos.integrationtests.vo.AuthenticationRequest;
-import com.estudos.integrationtests.vo.AuthenticationResponse;
 import com.estudos.integrationtests.vo.PersonVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -37,7 +36,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
 
     @Test
     @Order(0)
-    public void authorization() throws JsonProcessingException {
+    public void authorization() {
         AuthenticationRequest user = new AuthenticationRequest("Administrator", "admin123");
 
         var token = given()
@@ -50,8 +49,8 @@ public class PersonControllerTest extends AbstractIntegrationTest {
                 .then()
                 .statusCode(200)
                 .extract()
-                .body()
-                .asString();
+                .jsonPath()
+                .getString("token");
 
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARM_AUTHORIZATION, "Bearer " + token)
