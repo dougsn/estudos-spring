@@ -19,12 +19,12 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        if (userRepository.findByUsername("Administrator").isEmpty()){
-            var userSystem = User.builder()
-                    .userName("Administrator")
-                    .password(passwordEncoder.encode("admin123"))
-                    .build();
-            userRepository.save(userSystem);
-        }
+//        if (userRepository.findByUsername("Administrator").isEmpty()){
+//            var userSystem = User.builder()
+//                    .userName("Administrator")
+//                    .password(passwordEncoder.encode("admin123"))
+//                    .build();
+//            userRepository.save(userSystem);
+//        }
     }
 }
