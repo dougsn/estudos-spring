@@ -181,7 +181,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
 
     @Test
     @Order(4)
-    public void testDelete() throws JsonProcessingException {
+    public void testDelete() {
         given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
                 .pathParam("id", person.getId())

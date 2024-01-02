@@ -5,6 +5,7 @@ import com.estudos.integrationtests.vo.AuthenticationRequest;
 import com.estudos.integrationtests.vo.AuthenticationResponse;
 import com.estudos.integrationtests.vo.BookDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.TestConfigs;
@@ -15,6 +16,8 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -71,7 +74,6 @@ public class BookControllerTest extends AbstractIntegrationTest {
     @Order(1)
     public void testCreate() throws JsonProcessingException {
         mockBook();
-
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
                 .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
@@ -104,23 +106,38 @@ public class BookControllerTest extends AbstractIntegrationTest {
 
     @Test
     @Order(2)
-    public void testCreateWithWrongOrigin() {
-        mockBook();
+    public void testUpdate() throws JsonProcessingException {
+        book.setAuthor("Douglas Modificado");
+        book.setTitle("Nascimento Modificado");
 
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
+                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
                 .body(book)
                 .when()
-                .post()
+                .put()
                 .then()
-                .statusCode(403)
+                .statusCode(200)
                 .extract()
                 .body()
                 .asString();
 
-        assertNotNull(content);
-        assertEquals("Invalid CORS request", content);
+        BookDTO persistedBook = objectMapper.readValue(content, BookDTO.class);
+        book = persistedBook;
+
+        assertNotNull(persistedBook);
+        assertNotNull(persistedBook.getId());
+        assertNotNull(persistedBook.getAuthor());
+        assertNotNull(persistedBook.getTitle());
+        assertNotNull(persistedBook.getPrice());
+        assertNotNull(persistedBook.getLaunch_date());
+
+        assertTrue(persistedBook.getId() > 0);
+
+
+        assertEquals("Douglas Modificado", persistedBook.getAuthor());
+        assertEquals("Nascimento Modificado", persistedBook.getTitle());
+        assertEquals(30.0, persistedBook.getPrice());
     }
 
     @Test
@@ -152,32 +169,71 @@ public class BookControllerTest extends AbstractIntegrationTest {
 
         assertTrue(persistedBook.getId() > 0);
 
-        assertEquals("Douglas", persistedBook.getAuthor());
-        assertEquals("Nascimento", persistedBook.getTitle());
+        assertEquals("Douglas Modificado", persistedBook.getAuthor());
+        assertEquals("Nascimento Modificado", persistedBook.getTitle());
         assertEquals(30.0, persistedBook.getPrice());
         assertEquals("20/01/2023", persistedBook.getLaunch_date());
     }
 
     @Test
     @Order(4)
-    public void findByIdWithWrongOrigin() {
-        mockBook();
+    public void testDelete() {
+        given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .pathParam("id", book.getId())
+                .when()
+                .delete("{id}")
+                .then()
+                .statusCode(204);
+    }
 
+    @Test
+    @Order(5)
+    public void testFindAll() throws JsonProcessingException {
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_SEMERU)
-                .pathParams("id", book.getId())
                 .when()
-                .get("{id}")
+                .get()
                 .then()
-                .statusCode(403)
+                .statusCode(200)
                 .extract()
                 .body()
                 .asString();
 
+        List<BookDTO> books = objectMapper.readValue(content, new TypeReference<>() {
+        });
 
-        assertNotNull(content);
-        assertEquals("Invalid CORS request", content);
+        BookDTO bookOne = books.get(0);
+
+        assertNotNull(bookOne.getId());
+        assertNotNull(bookOne.getAuthor());
+        assertNotNull(bookOne.getPrice());
+        assertNotNull(bookOne.getTitle());
+        assertNotNull(bookOne.getLaunch_date());
+
+        assertEquals(1, bookOne.getId());
+        assertEquals("Michael C. Feathers", bookOne.getAuthor());
+        assertEquals("29/11/2017", bookOne.getLaunch_date());
+        assertEquals(49.00, bookOne.getPrice());
+        assertEquals("Working effectively with legacy code", bookOne.getTitle());
+    }
+
+    @Test
+    @Order(6)
+    public void testFindAllWithoutToken() {
+        RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
+                .setBasePath("/api/book/v1")
+                .setPort(TestConfigs.SERVER_PORT)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        given().spec(specificationWithoutToken)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .when()
+                .get()
+                .then()
+                .statusCode(403);
     }
 
     private void mockBook() {
