@@ -8,10 +8,14 @@ import com.estudos.repository.PersonRepository;
 import com.estudos.services.exceptions.BadRequestException;
 import com.estudos.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -23,13 +27,20 @@ public class PersonServices {
 
     @Autowired
     PersonRepository repository;
+    @Autowired
+    PagedResourcesAssembler<PersonVO> assembler;
 
-    public List<PersonVO> findAll() {
+    public PagedModel<EntityModel<PersonVO>> findAll(Pageable pageable) {
         logger.info("Finding all person!");
-        var persons = DozerMapper.parseListsObjects(repository.findAll(), PersonVO.class);
-        persons.forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
-        return persons;
+        var personPage = repository.findAll(pageable);
+
+        var personVOSPage = personPage.map(p -> DozerMapper.parseObject(p, PersonVO.class));
+        personVOSPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(PersonController.class)
+                .findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+        return assembler.toModel(personVOSPage, link);
     }
 
     public PersonVO findById(Long id) {
@@ -43,6 +54,7 @@ public class PersonServices {
 
         return vo;
     }
+
     @Transactional
     public PersonVO disablePerson(Long id) {
         logger.info("Disabling one person!");
