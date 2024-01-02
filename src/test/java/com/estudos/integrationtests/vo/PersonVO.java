@@ -9,9 +9,12 @@ public class PersonVO implements Serializable {
     private String last_name;
     private String address;
     private String gender;
+    private Boolean enabled;
+
 
     public PersonVO() {
     }
+
 
     public Long getId() {
         return id;
@@ -53,4 +56,11 @@ public class PersonVO implements Serializable {
         this.gender = gender;
     }
 
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 }

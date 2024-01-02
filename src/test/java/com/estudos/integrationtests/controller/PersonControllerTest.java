@@ -94,6 +94,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertNotNull(persistedPerson.getLast_name());
         assertNotNull(persistedPerson.getAddress());
         assertNotNull(persistedPerson.getGender());
+        assertTrue(persistedPerson.getEnabled());
 
         assertTrue(persistedPerson.getId() > 0);
 
@@ -130,6 +131,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertNotNull(persistedPerson.getLast_name());
         assertNotNull(persistedPerson.getAddress());
         assertNotNull(persistedPerson.getGender());
+        assertTrue(persistedPerson.getEnabled());
 
         assertEquals(person.getId(), persistedPerson.getId());
 
@@ -143,6 +145,40 @@ public class PersonControllerTest extends AbstractIntegrationTest {
 
     @Test
     @Order(3)
+    public void testDisablePersonById() throws JsonProcessingException {
+
+        var content = given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .pathParams("id", person.getId())
+                .when()
+                .patch("{id}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
+        person = persistedPerson;
+
+        assertNotNull(persistedPerson);
+        assertNotNull(persistedPerson.getId());
+        assertNotNull(persistedPerson.getFirst_name());
+        assertNotNull(persistedPerson.getLast_name());
+        assertNotNull(persistedPerson.getAddress());
+        assertFalse(persistedPerson.getEnabled());
+
+        assertEquals(person.getId(), persistedPerson.getId());
+
+
+        assertEquals("Richard Modificado", persistedPerson.getFirst_name());
+        assertEquals("Stallman Modificado", persistedPerson.getLast_name());
+        assertEquals("New York City - New York, US", persistedPerson.getAddress());
+        assertEquals("Male", persistedPerson.getGender());
+    }
+
+    @Test
+    @Order(4)
     public void findById() throws JsonProcessingException {
         mockPerson();
 
@@ -164,10 +200,9 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertNotNull(persistedPerson.getId());
         assertNotNull(persistedPerson.getFirst_name());
         assertNotNull(persistedPerson.getLast_name());
-        ;
         assertNotNull(persistedPerson.getAddress());
-        ;
         assertNotNull(persistedPerson.getGender());
+        assertFalse(persistedPerson.getEnabled());
 
         assertEquals(person.getId(), persistedPerson.getId());
 
@@ -175,12 +210,11 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertEquals("Richard Modificado", persistedPerson.getFirst_name());
         assertEquals("Stallman Modificado", persistedPerson.getLast_name());
         assertEquals("New York City - New York, US", persistedPerson.getAddress());
-        ;
         assertEquals("Male", persistedPerson.getGender());
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void testDelete() {
         given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
@@ -192,7 +226,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testFindAll() throws JsonProcessingException {
 
         var content = given().spec(specification)
@@ -227,7 +261,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
 
 
     @Test
-    @Order(6)
+    @Order(7)
     public void testFindAllWithoutToken() {
         RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
                 .setBasePath("/api/person/v1")
@@ -249,6 +283,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         person.setLast_name("Stallman");
         person.setAddress("New York City - New York, US");
         person.setGender("Male");
+        person.setEnabled(true);
     }
 
 }

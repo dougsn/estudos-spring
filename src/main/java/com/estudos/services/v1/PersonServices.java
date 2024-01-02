@@ -9,6 +9,7 @@ import com.estudos.services.exceptions.BadRequestException;
 import com.estudos.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -33,6 +34,20 @@ public class PersonServices {
 
     public PersonVO findById(Long id) {
         logger.info("Finding one person!");
+        Person person = repository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Person id: " + id + " not found."));
+
+        // Colocando o link hateoas para si mesmo.
+        var vo = DozerMapper.parseObject(person, PersonVO.class);
+        vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+
+        return vo;
+    }
+    @Transactional
+    public PersonVO disablePerson(Long id) {
+        logger.info("Disabling one person!");
+        repository.disablePerson(id);
+
         Person person = repository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Person id: " + id + " not found."));
 

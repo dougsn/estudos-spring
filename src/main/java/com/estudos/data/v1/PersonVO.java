@@ -20,8 +20,17 @@ public class PersonVO extends RepresentationModel<PersonVO> implements Serializa
     private String address;
     // @JsonIgnore // Omitindo esse atributo no json.
     private String gender;
+    private Boolean enabled;
 
     public PersonVO() {
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Long getKey() {
