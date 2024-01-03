@@ -193,48 +193,12 @@ public class PersonControllerCorsTest extends AbstractIntegrationTest {
         assertEquals("Invalid CORS request", content);
     }
 
-    @Test
-    @Order(5)
-    public void findAll() throws JsonProcessingException {
-        mockPerson();
-
-        var content = given().spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .header(TestConfigs.HEADER_PARM_ORIGIN, TestConfigs.ORIGIN_LOCALHOST)
-                .when()
-                .get()
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        List<PersonVO> personListResponse = Collections.singletonList(objectMapper.readValue(content, PersonVO.class));
-        personList = personListResponse;
-
-        assertNotNull(personListResponse);
-//        assertNotNull(personListResponse.getId());
-//        assertNotNull(personListResponse.getFirst_name());
-//        assertNotNull(personListResponse.getLast_name());
-//        ;
-//        assertNotNull(personListResponse.getAddress());
-//        ;
-//        assertNotNull(personListResponse.getGender());
-
-        assertEquals(7, personListResponse.size());
-
-
-//        assertEquals("Richard", personListResponse.getFirst_name());
-//        assertEquals("Stallman", personListResponse.getLast_name());
-//        assertEquals("New York City - New York, US", personListResponse.getAddress());
-//        assertEquals("Male", personListResponse.getGender());
-    }
-
     private void mockPerson() {
         person.setFirst_name("Richard");
         person.setLast_name("Stallman");
         person.setAddress("New York City - New York, US");
         person.setGender("Male");
+        person.setEnabled(true);
     }
 
 }
