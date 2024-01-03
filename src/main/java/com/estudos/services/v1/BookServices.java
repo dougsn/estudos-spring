@@ -1,6 +1,7 @@
 package com.estudos.services.v1;
 
 import com.estudos.controller.v1.BookController;
+import com.estudos.controller.v1.PersonController;
 import com.estudos.data.dto.book.BookDTO;
 import com.estudos.data.dto.book.BookDTOMapper;
 import com.estudos.data.dto.book.BookDTOMapperList;
@@ -9,6 +10,12 @@ import com.estudos.repository.BookRepository;
 import com.estudos.services.exceptions.BadRequestException;
 import com.estudos.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,15 +34,20 @@ public class BookServices {
     BookDTOMapper mapper;
     @Autowired
     BookDTOMapperList listMapper;
+    @Autowired
+    PagedResourcesAssembler<BookDTO> assembler;
 
-    public List<BookDTO> findAll() {
+    public PagedModel<EntityModel<BookDTO>> findAll(Pageable pageable) {
         logger.info("Finding all books!");
-        var books = repository.findAll();
+        var books = repository.findAll(pageable);
 
-        var dtoList = listMapper.apply(books);
+        var dtoList = books.map(b -> mapper.apply(b));
         dtoList.forEach(b -> b.add(linkTo(methodOn(BookController.class).findById(b.getId())).withSelfRel()));
 
-        return dtoList;
+        Link link = linkTo(methodOn(BookController.class)
+                .findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+
+        return assembler.toModel(dtoList, link);
     }
 
     public BookDTO findById(Long id) {
