@@ -1,16 +1,13 @@
 package com.estudos.services.v1;
 
 import com.estudos.controller.v1.BookController;
-import com.estudos.controller.v1.PersonController;
 import com.estudos.data.dto.book.BookDTO;
 import com.estudos.data.dto.book.BookDTOMapper;
-import com.estudos.data.dto.book.BookDTOMapperList;
 import com.estudos.data.model.Book;
 import com.estudos.repository.BookRepository;
 import com.estudos.services.exceptions.BadRequestException;
 import com.estudos.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -18,7 +15,6 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

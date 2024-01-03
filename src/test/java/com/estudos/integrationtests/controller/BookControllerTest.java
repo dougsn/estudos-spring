@@ -4,8 +4,8 @@ import com.estudos.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.estudos.integrationtests.vo.AuthenticationRequest;
 import com.estudos.integrationtests.vo.AuthenticationResponse;
 import com.estudos.integrationtests.vo.BookDTO;
+import com.estudos.integrationtests.wrappers.WrapperBookDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.TestConfigs;
@@ -16,8 +16,6 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -192,6 +190,7 @@ public class BookControllerTest extends AbstractIntegrationTest {
     public void testFindAll() throws JsonProcessingException {
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
                 .when()
                 .get()
                 .then()
@@ -200,8 +199,8 @@ public class BookControllerTest extends AbstractIntegrationTest {
                 .body()
                 .asString();
 
-        List<BookDTO> books = objectMapper.readValue(content, new TypeReference<>() {
-        });
+        WrapperBookDTO wrapper = objectMapper.readValue(content, WrapperBookDTO.class);
+        var books = wrapper.getEmbedded().getBooks();
 
         BookDTO bookOne = books.get(0);
 
@@ -211,11 +210,11 @@ public class BookControllerTest extends AbstractIntegrationTest {
         assertNotNull(bookOne.getTitle());
         assertNotNull(bookOne.getLaunch_date());
 
-        assertEquals(1, bookOne.getId());
-        assertEquals("Michael C. Feathers", bookOne.getAuthor());
-        assertEquals("29/11/2017", bookOne.getLaunch_date());
-        assertEquals(49.00, bookOne.getPrice());
-        assertEquals("Working effectively with legacy code", bookOne.getTitle());
+        assertEquals(15, bookOne.getId());
+        assertEquals("Aguinaldo Aragon Fernandes e Vladimir Ferraz de Abreu", bookOne.getAuthor());
+        assertEquals("07/11/2017", bookOne.getLaunch_date());
+        assertEquals(54.0, bookOne.getPrice());
+        assertEquals("Implantando a governança de TI", bookOne.getTitle());
     }
 
     @Test

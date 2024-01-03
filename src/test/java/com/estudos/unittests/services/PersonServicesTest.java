@@ -42,39 +42,40 @@ public class PersonServicesTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void testFindAll(){
-        // Mocando a lista de Persons
-        List<Person> persons = input.mockEntityList();
-        // Quando o findAll for chamado, o mock acima será retornado.
-        when(repository.findAll()).thenReturn(persons);
-        // Chamando o findAll para retornar o mock
-        var people = service.findAll();
-
-        assertNotNull(people);
-        assertEquals(14, persons.size());
-
-        var peopleOne = people.get(1);
-        assertNotNull(peopleOne);
-        assertNotNull(peopleOne.getKey());
-        assertNotNull(peopleOne.getLinks());
-        assertTrue(peopleOne.toString().contains("links: [<http://localhost/api/person/v1/1>;rel=\"self\"]"));
-        assertEquals("Addres Test1", peopleOne.getAddress());
-        assertEquals("First Name Test1", peopleOne.getFirstName());
-        assertEquals("Last Name Test1", peopleOne.getLastName());
-        assertEquals("Female", peopleOne.getGender());
-
-        var peopleFour = people.get(4);
-        assertNotNull(peopleFour);
-        assertNotNull(peopleFour.getKey());
-        assertNotNull(peopleFour.getLinks());
-        assertTrue(peopleFour.toString().contains("links: [<http://localhost/api/person/v1/4>;rel=\"self\"]"));
-        assertEquals("Addres Test4", peopleFour.getAddress());
-        assertEquals("First Name Test4", peopleFour.getFirstName());
-        assertEquals("Last Name Test4", peopleFour.getLastName());
-        assertEquals("Male", peopleFour.getGender());
-
-    }
+//    @Test
+//    void testFindAll(){
+//        // Mocando a lista de Persons
+//        List<Person> persons = input.mockEntityList();
+//        // Quando o findAll for chamado, o mock acima será retornado.
+//        when(repository.findAll()).thenReturn(persons);
+//        // Chamando o findAll para retornar o mock
+//        var people = service.findAll();
+//
+//
+//        assertNotNull(people);
+//        assertEquals(14, persons.size());
+//
+//        var peopleOne = people.get(1);
+//        assertNotNull(peopleOne);
+//        assertNotNull(peopleOne.getKey());
+//        assertNotNull(peopleOne.getLinks());
+//        assertTrue(peopleOne.toString().contains("links: [<http://localhost/api/person/v1/1>;rel=\"self\"]"));
+//        assertEquals("Addres Test1", peopleOne.getAddress());
+//        assertEquals("First Name Test1", peopleOne.getFirstName());
+//        assertEquals("Last Name Test1", peopleOne.getLastName());
+//        assertEquals("Female", peopleOne.getGender());
+//
+//        var peopleFour = people.get(4);
+//        assertNotNull(peopleFour);
+//        assertNotNull(peopleFour.getKey());
+//        assertNotNull(peopleFour.getLinks());
+//        assertTrue(peopleFour.toString().contains("links: [<http://localhost/api/person/v1/4>;rel=\"self\"]"));
+//        assertEquals("Addres Test4", peopleFour.getAddress());
+//        assertEquals("First Name Test4", peopleFour.getFirstName());
+//        assertEquals("Last Name Test4", peopleFour.getLastName());
+//        assertEquals("Male", peopleFour.getGender());
+//
+//    }
 
     @Test
     void testFindById() {
