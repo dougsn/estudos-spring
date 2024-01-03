@@ -258,9 +258,43 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertEquals("Male", foundPersonOne.getGender());
     }
 
-
     @Test
     @Order(7)
+    public void testFindByName() throws JsonProcessingException {
+
+        var content = given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .pathParam("firstName", "ayr")
+                .queryParams("page",0, "size", 6, "direction", "asc")
+                .when()
+                .get("findPersonByName/{firstName}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        WrapperPersonVO wrapper = objectMapper.readValue(content, WrapperPersonVO.class);
+        var people = wrapper.getEmbedded().getPersons();
+
+        PersonVO foundPersonOne = people.get(0);
+
+        assertNotNull(foundPersonOne.getId());
+        assertNotNull(foundPersonOne.getFirst_name());
+        assertNotNull(foundPersonOne.getLast_name());
+        assertNotNull(foundPersonOne.getAddress());
+        assertNotNull(foundPersonOne.getGender());
+
+        assertEquals(1, foundPersonOne.getId());
+        assertEquals("Ayrton", foundPersonOne.getFirst_name());
+        assertEquals("Senna", foundPersonOne.getLast_name());
+        assertEquals("São Paulo", foundPersonOne.getAddress());
+        assertEquals("Male", foundPersonOne.getGender());
+    }
+
+
+    @Test
+    @Order(8)
     public void testFindAllWithoutToken() {
         RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
                 .setBasePath("/api/person/v1")
