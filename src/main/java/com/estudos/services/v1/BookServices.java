@@ -33,8 +33,6 @@ public class BookServices {
     @Autowired
     BookDTOMapper mapper;
     @Autowired
-    BookDTOMapperList listMapper;
-    @Autowired
     PagedResourcesAssembler<BookDTO> assembler;
 
     public PagedModel<EntityModel<BookDTO>> findAll(Pageable pageable) {
