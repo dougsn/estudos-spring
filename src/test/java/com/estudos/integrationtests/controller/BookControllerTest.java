@@ -234,6 +234,31 @@ public class BookControllerTest extends AbstractIntegrationTest {
                 .then()
                 .statusCode(403);
     }
+    @Test
+    @Order(5)
+    public void testHATEOAS() {
+        var content = given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8080/api/book/v1/15\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8080/api/book/v1/9\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8080/api/book/v1/4\"}}}"));
+
+        assertTrue(content.contains("{\"first\":{\"href\":\"http://localhost:8080/api/book/v1?direction=asc&page=0&size=10&sort=author,asc\"}"));
+        assertTrue(content.contains("\"self\":{\"href\":\"http://localhost:8080/api/book/v1?page=0&size=10&direction=asc\"}"));
+        assertTrue(content.contains("\"next\":{\"href\":\"http://localhost:8080/api/book/v1?direction=asc&page=1&size=10&sort=author,asc\"}"));
+        assertTrue(content.contains("\"last\":{\"href\":\"http://localhost:8080/api/book/v1?direction=asc&page=1&size=10&sort=author,asc\"}}"));
+
+        assertTrue(content.contains("\"page\":{\"size\":10,\"totalElements\":15,\"totalPages\":2,\"number\":0}}"));
+    }
 
     private void mockBook() {
         book.setAuthor("Douglas");

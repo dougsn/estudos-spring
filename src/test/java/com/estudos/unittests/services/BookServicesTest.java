@@ -46,40 +46,6 @@ public class BookServicesTest {
         MockitoAnnotations.openMocks(this);
     }
 
-//    @Test
-//    void testFindAll() {
-//        List<Book> books = input.mockEntityList();
-//        List<BookDTO> dtoList = input.mockDTOList();
-//        // Quando o findAll for chamado, o mock acima será retornado.
-//        when(repository.findAll()).thenReturn(books);
-//        when(listMapper.apply(anyList())).thenReturn(dtoList);
-//
-//        // Chamando o findAll para retornar o mock
-//        var book = service.findAll();
-//        assertNotNull(book);
-//        assertEquals(10, book.size());
-//
-//        var bookOne = book.get(1);
-//        assertNotNull(bookOne);
-//        assertNotNull(bookOne.getId());
-//        assertNotNull(bookOne.getLinks());
-//        assertTrue(bookOne.toString().contains("links: [<http://localhost/api/book/v1/1>;rel=\"self\"]"));
-//        assertEquals("Author Test 1", bookOne.getAuthor());
-//        assertEquals("Title Test 1", bookOne.getTitle());
-//        assertEquals(1.0, bookOne.getPrice());
-//        assertEquals(LocalDate.now(), bookOne.getLaunchDate());
-//
-//        var bookSeven = book.get(7);
-//        assertNotNull(bookSeven);
-//        assertNotNull(bookSeven.getId());
-//        assertNotNull(bookSeven.getLinks());
-//        assertTrue(bookSeven.toString().contains("links: [<http://localhost/api/book/v1/7>;rel=\"self\"]"));
-//        assertEquals("Author Test 7", bookSeven.getAuthor());
-//        assertEquals("Title Test 7", bookSeven.getTitle());
-//        assertEquals(7.0, bookSeven.getPrice());
-//        assertEquals(LocalDate.now(), bookSeven.getLaunchDate());
-//    }
-
     @Test
     void testFindById() {
         when(repository.findById(1L)).thenReturn(Optional.of(input.mockEntity(1)));
