@@ -1,5 +1,7 @@
 cors:
   originPatterns: http://localhost:8080,http://localhost:3000
+file:
+  upload-dir: /UploadDir # Tem que criar a pasta na mesma UNIDADE que está sendo executada a aplicação
 security:
   jwt:
     token:
@@ -17,6 +19,12 @@ spring:
     flyway:
       baselineOnMigrate: true
       locations=classpath: db/migration
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB # Tamanho que ocupará em memória, após passar esse valor, será gravado em disco.
+      max-file-size: 200MB
+      max-request-size: 215MB
 spring-doc:
   pathsToMatch:
    - /auth/**

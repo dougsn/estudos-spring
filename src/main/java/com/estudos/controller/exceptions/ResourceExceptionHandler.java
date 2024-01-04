@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.security.SignatureException;
 import java.time.LocalDateTime;
@@ -51,6 +52,14 @@ public class ResourceExceptionHandler {
     public ResponseEntity<StandardError> httpMessageNotReadableException(HttpServletRequest request) {
         StandardError error =
                 new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), "Corpo da requisição é obrigatório.", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<StandardError> httpMessageNotReadableException(MissingServletRequestPartException e, HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
@@ -145,5 +154,17 @@ public class ResourceExceptionHandler {
         StandardError error =
                 new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<StandardError> fileStorageException(FileStorageException ex, HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+    @ExceptionHandler(MyFileNotFoundException.class)
+    public ResponseEntity<StandardError> myFileNotFoundException(MyFileNotFoundException ex, HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }
